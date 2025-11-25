@@ -3,22 +3,16 @@ import { CourseCard } from '@/components/CourseCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, Plus } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { courses } from '@/data/mockData';
 
-export default function SuperAdminCourses() {
+export default function ClientAdminCourses() {
   return (
-    <DashboardLayout userRole="super_admin" userName="Super Admin">
+    <DashboardLayout userRole="client_admin" userName="Admin User">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Course Library</h1>
-            <p className="text-muted-foreground">Manage all courses across the platform</p>
-          </div>
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add New Course
-          </Button>
+        <div>
+          <h1 className="text-3xl font-bold">Course Library</h1>
+          <p className="text-muted-foreground">Browse and assign courses to your employees</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
@@ -31,18 +25,7 @@ export default function SuperAdminCourses() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="review">Under Review</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select defaultValue="all-sectors">
-            <SelectTrigger className="w-full md:w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-sectors">All Sectors</SelectItem>
+              <SelectItem value="all">All Sectors</SelectItem>
               <SelectItem value="shipping">Shipping</SelectItem>
               <SelectItem value="hospitality">Hospitality</SelectItem>
               <SelectItem value="soft-skills">Soft Skills</SelectItem>
@@ -60,8 +43,8 @@ export default function SuperAdminCourses() {
               key={course.id}
               course={course}
               actionButton={{
-                label: 'Manage Course',
-                onClick: () => console.log('Manage', course.id),
+                label: 'Assign to Employees',
+                onClick: () => console.log('Assign', course.id),
               }}
             />
           ))}
