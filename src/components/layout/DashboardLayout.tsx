@@ -1,8 +1,9 @@
 import { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { UserRole } from '@/types';
-import { Bell, User } from 'lucide-react';
+import { Bell, User, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -20,6 +21,8 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, userRole, userName = 'User' }: DashboardLayoutProps) {
+  const navigate = useNavigate();
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -29,6 +32,15 @@ export function DashboardLayout({ children, userRole, userName = 'User' }: Dashb
           {/* Header */}
           <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-card px-6">
             <SidebarTrigger />
+            
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate(-1)}
+              className="hover:bg-muted"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
             
             <div className="flex-1" />
             
