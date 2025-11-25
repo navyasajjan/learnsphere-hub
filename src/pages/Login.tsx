@@ -20,8 +20,8 @@ export default function Login() {
     // Simulate login
     setTimeout(() => {
       setIsLoading(false);
-      // Navigate based on role
-      navigate(`/${role.replace('_', '-')}/dashboard`);
+      // Navigate to role selection page
+      navigate('/role-selection');
     }, 1000);
   };
 
