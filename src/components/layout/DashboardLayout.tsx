@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
@@ -13,7 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
+import { NotificationsPanel } from '@/components/NotificationsPanel';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -24,6 +30,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, userRole, userName = 'User' }: DashboardLayoutProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const handleLogout = () => {
     toast({
@@ -60,12 +67,6 @@ export function DashboardLayout({ children, userRole, userName = 'User' }: Dashb
     navigate(settingsRoutes[userRole]);
   };
 
-  const handleNotifications = () => {
-    toast({
-      title: "Notifications",
-      description: "You have 3 new notifications",
-    });
-  };
 
   return (
     <SidebarProvider>
@@ -88,15 +89,25 @@ export function DashboardLayout({ children, userRole, userName = 'User' }: Dashb
             
             <div className="flex-1" />
             
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="relative"
-              onClick={handleNotifications}
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
-            </Button>
+            <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="relative"
+                >
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full animate-pulse" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent 
+                className="w-auto p-0" 
+                align="end"
+                sideOffset={8}
+              >
+                <NotificationsPanel onClose={() => setNotificationsOpen(false)} />
+              </PopoverContent>
+            </Popover>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

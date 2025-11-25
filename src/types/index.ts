@@ -93,3 +93,18 @@ export interface AnalyticsData {
     count: number;
   }>;
 }
+
+export type NotificationType = 'info' | 'success' | 'warning' | 'error';
+export type NotificationCategory = 'course' | 'system' | 'assignment' | 'achievement' | 'support';
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  category: NotificationCategory;
+  timestamp: string;
+  read: boolean;
+  actionUrl?: string;
+  actionLabel?: string;
+}
