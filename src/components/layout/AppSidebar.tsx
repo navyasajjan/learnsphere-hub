@@ -51,9 +51,10 @@ const roleMenus: Record<UserRole, Array<{ title: string; url: string; icon: any 
   ],
   client_admin: [
     { title: 'Dashboard', url: '/client-admin/dashboard', icon: LayoutDashboard },
+    { title: 'Course Library', url: '/client-admin/courses', icon: BookOpen },
     { title: 'Employees', url: '/client-admin/employees', icon: Users },
-    { title: 'Course Assignments', url: '/client-admin/assignments', icon: BookOpen },
-    { title: 'Reports', url: '/client-admin/reports', icon: FileText },
+    { title: 'Course Assignments', url: '/client-admin/assignments', icon: FileText },
+    { title: 'Reports', url: '/client-admin/reports', icon: BarChart3 },
     { title: 'Teams', url: '/client-admin/teams', icon: UserCog },
     { title: 'Settings', url: '/client-admin/settings', icon: Settings },
   ],
@@ -66,6 +67,7 @@ const roleMenus: Record<UserRole, Array<{ title: string; url: string; icon: any 
   ],
   helpdesk: [
     { title: 'Dashboard', url: '/helpdesk/dashboard', icon: LayoutDashboard },
+    { title: 'All Courses', url: '/helpdesk/courses', icon: BookOpen },
     { title: 'User Search', url: '/helpdesk/search', icon: Users },
     { title: 'Support Tickets', url: '/helpdesk/tickets', icon: HelpCircle },
     { title: 'SCORM Logs', url: '/helpdesk/logs', icon: FileText },
