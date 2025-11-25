@@ -9,8 +9,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Search, Users, MessageSquare, CheckCircle, Clock, AlertCircle, FileText } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export default function HelpDeskDashboard() {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [supportNote, setSupportNote] = useState('');
   const tickets = [
     { id: 'TK-001', user: 'John Smith', issue: 'Cannot access course', priority: 'high', status: 'open', created: '1 hour ago' },
     { id: 'TK-002', user: 'Sarah Johnson', issue: 'SCORM player error', priority: 'medium', status: 'in-progress', created: '3 hours ago' },
@@ -79,6 +84,8 @@ export default function HelpDeskDashboard() {
                   <Input
                     placeholder="Search by name, email, or company..."
                     className="pl-10"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
 
@@ -120,8 +127,26 @@ export default function HelpDeskDashboard() {
                           </div>
 
                           <div className="flex flex-col gap-2 ml-4">
-                            <Button size="sm">View Details</Button>
-                            <Button size="sm" variant="outline">Reset Progress</Button>
+                            <Button 
+                              size="sm"
+                              onClick={() => {
+                                toast({
+                                  title: "User Details",
+                                  description: `Opening detailed view for ${user.name}`,
+                                });
+                              }}
+                            >View Details</Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                toast({
+                                  title: "Reset Progress",
+                                  description: `Reset progress for ${user.name}?`,
+                                  variant: "destructive",
+                                });
+                              }}
+                            >Reset Progress</Button>
                           </div>
                         </div>
                       </CardContent>
@@ -178,7 +203,16 @@ export default function HelpDeskDashboard() {
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">{ticket.created}</TableCell>
                         <TableCell>
-                          <Button size="sm" variant="ghost">View</Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => {
+                              toast({
+                                title: "Opening Ticket",
+                                description: `Viewing details for ${ticket.id}`,
+                              });
+                            }}
+                          >View</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -193,10 +227,37 @@ export default function HelpDeskDashboard() {
                 <CardTitle className="text-lg">Add Support Note</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Textarea placeholder="Enter support note or resolution..." rows={3} />
+                <Textarea 
+                  placeholder="Enter support note or resolution..." 
+                  rows={3}
+                  value={supportNote}
+                  onChange={(e) => setSupportNote(e.target.value)}
+                />
                 <div className="flex gap-2">
-                  <Button>Add Note</Button>
-                  <Button variant="outline">Mark as Resolved</Button>
+                  <Button onClick={() => {
+                    if (supportNote.trim()) {
+                      toast({
+                        title: "Note Added",
+                        description: "Support note has been saved successfully",
+                      });
+                      setSupportNote('');
+                    } else {
+                      toast({
+                        title: "Error",
+                        description: "Please enter a note before submitting",
+                        variant: "destructive",
+                      });
+                    }
+                  }}>Add Note</Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      toast({
+                        title: "Ticket Resolved",
+                        description: "Ticket has been marked as resolved",
+                      });
+                    }}
+                  >Mark as Resolved</Button>
                 </div>
               </CardContent>
             </Card>
@@ -229,7 +290,16 @@ export default function HelpDeskDashboard() {
                         </div>
                         <p className="text-sm font-mono bg-muted px-2 py-1 rounded">{log.error}</p>
                       </div>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          toast({
+                            title: "Error Details",
+                            description: `Viewing full log for ${log.user}`,
+                          });
+                        }}
+                      >
                         <FileText className="h-4 w-4 mr-1" />
                         Details
                       </Button>

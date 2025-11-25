@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { BookOpen, Clock, Award, TrendingUp, Play } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { courses } from '@/data/mockData';
+import { useToast } from '@/hooks/use-toast';
 
 export default function EmployeeDashboard() {
+  const { toast } = useToast();
   const assignedCourses = courses.slice(0, 3);
 
   return (
@@ -62,7 +64,12 @@ export default function EmployeeDashboard() {
                   <p className="font-medium">Guest Experience Excellence</p>
                   <p className="text-sm text-muted-foreground">Hospitality • 65% complete</p>
                 </div>
-                <Button>Resume</Button>
+                <Button onClick={() => {
+                  toast({
+                    title: "Resuming Course",
+                    description: "Loading Guest Experience Excellence...",
+                  });
+                }}>Resume</Button>
               </div>
               <Progress value={65} className="h-2" />
             </div>
@@ -72,7 +79,12 @@ export default function EmployeeDashboard() {
                   <p className="font-medium">Effective Communication Skills</p>
                   <p className="text-sm text-muted-foreground">Soft Skills • 45% complete</p>
                 </div>
-                <Button variant="outline">Resume</Button>
+                <Button variant="outline" onClick={() => {
+                  toast({
+                    title: "Resuming Course",
+                    description: "Loading Effective Communication Skills...",
+                  });
+                }}>Resume</Button>
               </div>
               <Progress value={45} className="h-2" />
             </div>
@@ -89,7 +101,12 @@ export default function EmployeeDashboard() {
                 course={course}
                 actionButton={{
                   label: 'Start Course',
-                  onClick: () => console.log('Start course', course.id),
+                  onClick: () => {
+                    toast({
+                      title: "Starting Course",
+                      description: `Opening ${course.title}...`,
+                    });
+                  },
                 }}
               />
             ))}
@@ -123,7 +140,16 @@ export default function EmployeeDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-success">{cert.score}%</p>
-                    <Button variant="link" size="sm">View Certificate</Button>
+                    <Button 
+                      variant="link" 
+                      size="sm"
+                      onClick={() => {
+                        toast({
+                          title: "Certificate",
+                          description: `Opening certificate for ${cert.course}`,
+                        });
+                      }}
+                    >View Certificate</Button>
                   </div>
                 </div>
               ))}

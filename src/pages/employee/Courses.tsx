@@ -6,8 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search } from 'lucide-react';
 import { courses } from '@/data/mockData';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export default function EmployeeCourses() {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
   const assignedCourses = courses.slice(0, 4);
   const inProgressCourses = courses.slice(4, 6);
   const completedCourses = courses.slice(6, 9);
@@ -23,7 +27,12 @@ export default function EmployeeCourses() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search courses..." className="pl-10" />
+            <Input 
+              placeholder="Search courses..." 
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
           <Select defaultValue="all">
             <SelectTrigger className="w-full md:w-48">
@@ -54,7 +63,12 @@ export default function EmployeeCourses() {
                     course={course}
                     actionButton={{
                       label: 'Start Course',
-                      onClick: () => console.log('Start', course.id),
+                      onClick: () => {
+                        toast({
+                          title: "Starting Course",
+                          description: `Opening ${course.title}...`,
+                        });
+                      },
                     }}
                   />
                 </div>
@@ -71,7 +85,12 @@ export default function EmployeeCourses() {
                     course={course}
                     actionButton={{
                       label: 'Continue',
-                      onClick: () => console.log('Continue', course.id),
+                      onClick: () => {
+                        toast({
+                          title: "Resuming Course",
+                          description: `Continuing ${course.title}...`,
+                        });
+                      },
                     }}
                   />
                 </div>
@@ -88,7 +107,12 @@ export default function EmployeeCourses() {
                     course={course}
                     actionButton={{
                       label: 'View Certificate',
-                      onClick: () => console.log('Certificate', course.id),
+                      onClick: () => {
+                        toast({
+                          title: "Certificate",
+                          description: `Viewing certificate for ${course.title}`,
+                        });
+                      },
                     }}
                   />
                 </div>

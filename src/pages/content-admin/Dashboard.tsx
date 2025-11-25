@@ -11,8 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { BookOpen, Upload, CheckCircle, Clock, FileText, Play } from 'lucide-react';
 import { courses } from '@/data/mockData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export default function ContentAdminDashboard() {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
   const myCourses = courses.slice(0, 6);
 
   return (
@@ -157,11 +161,28 @@ export default function ContentAdminDashboard() {
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <Button className="flex-1">
+                  <Button 
+                    className="flex-1"
+                    onClick={() => {
+                      toast({
+                        title: "Uploading Course",
+                        description: "Validating SCORM package...",
+                      });
+                    }}
+                  >
                     <Upload className="h-4 w-4 mr-2" />
                     Upload & Validate
                   </Button>
-                  <Button variant="outline" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => {
+                      toast({
+                        title: "Test Preview",
+                        description: "Opening SCORM player preview...",
+                      });
+                    }}
+                  >
                     <Play className="h-4 w-4 mr-2" />
                     Test Preview
                   </Button>
@@ -174,7 +195,11 @@ export default function ContentAdminDashboard() {
           <TabsContent value="courses" className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="relative flex-1 max-w-md">
-                <Input placeholder="Search courses..." />
+                <Input 
+                  placeholder="Search courses..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               <div className="flex gap-2">
                 <Select defaultValue="all">
@@ -199,7 +224,12 @@ export default function ContentAdminDashboard() {
                     course={course}
                     actionButton={{
                       label: 'Edit Course',
-                      onClick: () => console.log('Edit', course.id),
+                      onClick: () => {
+                        toast({
+                          title: "Edit Course",
+                          description: `Opening editor for ${course.title}`,
+                        });
+                      },
                     }}
                   />
                 </div>
