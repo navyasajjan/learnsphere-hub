@@ -5,8 +5,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Search, Filter } from 'lucide-react';
 import { courses } from '@/data/mockData';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export default function ClientAdminCourses() {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
   return (
     <DashboardLayout userRole="client_admin" userName="Admin User">
       <div className="space-y-6">
@@ -18,7 +22,12 @@ export default function ClientAdminCourses() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search courses..." className="pl-10" />
+            <Input 
+              placeholder="Search courses..." 
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
           <Select defaultValue="all">
             <SelectTrigger className="w-full md:w-48">
@@ -31,7 +40,16 @@ export default function ClientAdminCourses() {
               <SelectItem value="soft-skills">Soft Skills</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="gap-2">
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => {
+              toast({
+                title: "Advanced Filters",
+                description: "Opening filter options...",
+              });
+            }}
+          >
             <Filter className="h-4 w-4" />
             More Filters
           </Button>
@@ -44,7 +62,12 @@ export default function ClientAdminCourses() {
               course={course}
               actionButton={{
                 label: 'Assign to Employees',
-                onClick: () => console.log('Assign', course.id),
+                onClick: () => {
+                  toast({
+                    title: "Assign Course",
+                    description: `Select employees to assign ${course.title}`,
+                  });
+                },
               }}
             />
           ))}

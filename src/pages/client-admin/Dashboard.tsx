@@ -7,8 +7,14 @@ import { Users, BookOpen, TrendingUp, AlertCircle, Search, Upload, UserPlus } fr
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ClientAdminDashboard() {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
   const employees = [
     { id: 1, name: 'Sarah Johnson', email: 'sarah.j@company.com', department: 'Operations', assignedCourses: 5, completedCourses: 3, progress: 60, status: 'active' },
     { id: 2, name: 'Michael Chen', email: 'michael.c@company.com', department: 'Sales', assignedCourses: 4, completedCourses: 4, progress: 100, status: 'active' },
@@ -31,11 +37,21 @@ export default function ClientAdminDashboard() {
             <p className="text-muted-foreground">Manage employees and training programs</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => {
+              toast({
+                title: "Bulk Upload",
+                description: "Bulk upload dialog would open here",
+              });
+            }}>
               <Upload className="h-4 w-4 mr-2" />
               Bulk Upload
             </Button>
-            <Button>
+            <Button onClick={() => {
+              toast({
+                title: "Add Employee",
+                description: "Employee creation form would open here",
+              });
+            }}>
               <UserPlus className="h-4 w-4 mr-2" />
               Add Employee
             </Button>
@@ -113,7 +129,12 @@ export default function ClientAdminDashboard() {
               </div>
               <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search employees..." className="pl-10" />
+                <Input 
+                  placeholder="Search employees..." 
+                  className="pl-10"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
             </div>
           </CardHeader>
@@ -154,7 +175,16 @@ export default function ClientAdminDashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          toast({
+                            title: "Employee Management",
+                            description: `Managing ${employee.name}'s training`,
+                          });
+                        }}
+                      >
                         Manage
                       </Button>
                     </TableCell>
@@ -173,7 +203,11 @@ export default function ClientAdminDashboard() {
               <CardDescription>Assign training to teams or individuals</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => navigate('/client-admin/assignments')}
+              >
                 Manage Assignments
               </Button>
             </CardContent>
@@ -185,7 +219,16 @@ export default function ClientAdminDashboard() {
               <CardDescription>Export compliance and progress reports</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  toast({
+                    title: "Generating Report",
+                    description: "Your compliance report is being prepared...",
+                  });
+                }}
+              >
                 Generate Report
               </Button>
             </CardContent>
@@ -197,7 +240,16 @@ export default function ClientAdminDashboard() {
               <CardDescription>Access employee completion certificates</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  toast({
+                    title: "Certificates",
+                    description: "Opening employee certificates...",
+                  });
+                }}
+              >
                 View All
               </Button>
             </CardContent>
