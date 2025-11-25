@@ -21,6 +21,7 @@ import ContentAdminCourses from "./pages/content-admin/Courses";
 import ContentAdminUpload from "./pages/content-admin/Upload";
 import ContentAdminCategories from "./pages/content-admin/Categories";
 import ContentAdminAnalytics from "./pages/content-admin/Analytics";
+import ContentAdminSettings from "./pages/content-admin/Settings";
 
 // Client Admin
 import ClientAdminDashboard from "./pages/client-admin/Dashboard";
@@ -45,6 +46,7 @@ import HelpDeskSearch from "./pages/helpdesk/Search";
 import HelpDeskTickets from "./pages/helpdesk/Tickets";
 import HelpDeskLogs from "./pages/helpdesk/Logs";
 import HelpDeskXAPI from "./pages/helpdesk/XAPI";
+import HelpDeskSettings from "./pages/helpdesk/Settings";
 
 import NotFound from "./pages/NotFound";
 
@@ -76,6 +78,7 @@ const App = () => (
           <Route path="/content-admin/upload" element={<ContentAdminUpload />} />
           <Route path="/content-admin/categories" element={<ContentAdminCategories />} />
           <Route path="/content-admin/analytics" element={<ContentAdminAnalytics />} />
+          <Route path="/content-admin/settings" element={<ContentAdminSettings />} />
           
           {/* Client Admin Routes */}
           <Route path="/client-admin/dashboard" element={<ClientAdminDashboard />} />
@@ -100,6 +103,7 @@ const App = () => (
           <Route path="/helpdesk/tickets" element={<HelpDeskTickets />} />
           <Route path="/helpdesk/logs" element={<HelpDeskLogs />} />
           <Route path="/helpdesk/xapi" element={<HelpDeskXAPI />} />
+          <Route path="/helpdesk/settings" element={<HelpDeskSettings />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
