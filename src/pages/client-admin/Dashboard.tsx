@@ -3,6 +3,7 @@ import { StatCard } from '@/components/StatCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Users, BookOpen, TrendingUp, AlertCircle, Search, Upload, UserPlus } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -168,18 +169,68 @@ export default function ClientAdminDashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Employee Management",
-                            description: `Managing ${employee.name}'s training`,
-                          });
-                        }}
-                      >
-                        Manage
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            Manage
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px]">
+                          <DialogHeader>
+                            <DialogTitle>Manage {employee.name}</DialogTitle>
+                            <DialogDescription>
+                              View and update employee training assignments
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm font-medium">Email</p>
+                                <p className="text-sm text-muted-foreground">{employee.email}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Department</p>
+                                <p className="text-sm text-muted-foreground">{employee.department}</p>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <p className="text-sm font-medium">Training Progress</p>
+                              <div className="flex items-center gap-2">
+                                <Progress value={employee.progress} className="h-2 flex-1" />
+                                <span className="text-sm font-medium">{employee.progress}%</span>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {employee.completedCourses} of {employee.assignedCourses} courses completed
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button 
+                                className="flex-1"
+                                onClick={() => {
+                                  toast({
+                                    title: "Assigning Courses",
+                                    description: `Opening course assignment for ${employee.name}`,
+                                  });
+                                }}
+                              >
+                                Assign Courses
+                              </Button>
+                              <Button 
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => {
+                                  toast({
+                                    title: "Viewing Progress",
+                                    description: `Loading detailed progress for ${employee.name}`,
+                                  });
+                                }}
+                              >
+                                View Full Progress
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -5,10 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Users, BookOpen, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 
 export default function ClientAdminAssignments() {
+  const { toast } = useToast();
   const assignments = [
     { id: 1, course: 'Maritime Safety Fundamentals', assignedTo: 'Operations Team', employees: 12, completed: 8, dueDate: '2024-09-30', status: 'active', mandatory: true },
     { id: 2, course: 'Guest Experience Excellence', assignedTo: 'All Employees', employees: 247, completed: 189, dueDate: '2024-10-15', status: 'active', mandatory: true },
@@ -174,7 +177,71 @@ export default function ClientAdminAssignments() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">View</Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm">View</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[700px]">
+                          <DialogHeader>
+                            <DialogTitle>{assignment.course}</DialogTitle>
+                            <DialogDescription>
+                              Assignment details and progress tracking
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm font-medium">Assigned To</p>
+                                <p className="text-sm text-muted-foreground">{assignment.assignedTo}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Due Date</p>
+                                <p className="text-sm text-muted-foreground">{assignment.dueDate}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Total Employees</p>
+                                <p className="text-sm text-muted-foreground">{assignment.employees}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Completed</p>
+                                <p className="text-sm text-muted-foreground">{assignment.completed} employees</p>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium">Completion Rate</p>
+                                <p className="text-sm font-medium">{Math.round((assignment.completed / assignment.employees) * 100)}%</p>
+                              </div>
+                              <Progress value={(assignment.completed / assignment.employees) * 100} className="h-2" />
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                              <Button 
+                                className="flex-1"
+                                onClick={() => {
+                                  toast({
+                                    title: "Sending Reminders",
+                                    description: `Reminder sent to ${assignment.employees - assignment.completed} employees`,
+                                  });
+                                }}
+                              >
+                                Send Reminder
+                              </Button>
+                              <Button 
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => {
+                                  toast({
+                                    title: "Extending Deadline",
+                                    description: "Opening deadline extension options...",
+                                  });
+                                }}
+                              >
+                                Extend Deadline
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))}

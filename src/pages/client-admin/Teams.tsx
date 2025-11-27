@@ -2,7 +2,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -133,10 +133,53 @@ export default function ClientAdminTeams() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    View Members
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="flex-1">
+                        View Members
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[600px]">
+                      <DialogHeader>
+                        <DialogTitle>{team.name} Members</DialogTitle>
+                        <DialogDescription>
+                          {team.members} team members • Managed by {team.manager}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          {['Sarah Johnson', 'Michael Chen', 'Emily Davis', 'James Wilson', 'Lisa Anderson'].slice(0, Math.min(5, team.members)).map((name, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <Users className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{name}</p>
+                                  <p className="text-sm text-muted-foreground">{name.toLowerCase().replace(' ', '.')}@company.com</p>
+                                </div>
+                              </div>
+                              <Button variant="ghost" size="sm">Manage</Button>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-sm text-muted-foreground text-center">
+                          Showing 5 of {team.members} members
+                        </p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => {
+                      toast({
+                        title: "Team Courses",
+                        description: `Loading ${team.assignedCourses} courses for ${team.name}`,
+                      });
+                    }}
+                  >
                     <BookOpen className="h-4 w-4 mr-1" />
                     Courses
                   </Button>
