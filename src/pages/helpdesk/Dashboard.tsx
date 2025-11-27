@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Search, Users, MessageSquare, CheckCircle, Clock, AlertCircle, FileText } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,6 +18,12 @@ export default function HelpDeskDashboard() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [supportNote, setSupportNote] = useState('');
+  const [openUserDetails, setOpenUserDetails] = useState(false);
+  const [openResetProgress, setOpenResetProgress] = useState(false);
+  const [openErrorDetails, setOpenErrorDetails] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedError, setSelectedError] = useState<any>(null);
+  
   const tickets = [
     { id: 'TK-001', user: 'John Smith', issue: 'Cannot access course', priority: 'high', status: 'open', created: '1 hour ago' },
     { id: 'TK-002', user: 'Sarah Johnson', issue: 'SCORM player error', priority: 'medium', status: 'in-progress', created: '3 hours ago' },
@@ -26,6 +34,29 @@ export default function HelpDeskDashboard() {
     { id: 1, name: 'Emily Davis', email: 'emily.d@company.com', company: 'ABC Corp', enrollments: 5, completed: 3, lastActive: '2 hours ago' },
     { id: 2, name: 'James Wilson', email: 'james.w@company.com', company: 'XYZ Ltd', enrollments: 8, completed: 6, lastActive: '1 day ago' },
   ];
+
+  const handleViewDetails = (user: any) => {
+    setSelectedUser(user);
+    setOpenUserDetails(true);
+  };
+
+  const handleResetProgress = (user: any) => {
+    setSelectedUser(user);
+    setOpenResetProgress(true);
+  };
+
+  const confirmResetProgress = () => {
+    toast({
+      title: "Progress Reset",
+      description: `Course progress has been reset for ${selectedUser?.name}`,
+    });
+    setOpenResetProgress(false);
+  };
+
+  const handleViewErrorDetails = (error: any) => {
+    setSelectedError(error);
+    setOpenErrorDetails(true);
+  };
 
   return (
     <DashboardLayout userRole="helpdesk" userName="HelpDesk">
@@ -129,23 +160,12 @@ export default function HelpDeskDashboard() {
                           <div className="flex flex-col gap-2 ml-4">
                             <Button 
                               size="sm"
-                              onClick={() => {
-                                toast({
-                                  title: "User Details",
-                                  description: `Opening detailed view for ${user.name}`,
-                                });
-                              }}
+                              onClick={() => handleViewDetails(user)}
                             >View Details</Button>
                             <Button 
                               size="sm" 
                               variant="outline"
-                              onClick={() => {
-                                toast({
-                                  title: "Reset Progress",
-                                  description: `Reset progress for ${user.name}?`,
-                                  variant: "destructive",
-                                });
-                              }}
+                              onClick={() => handleResetProgress(user)}
                             >Reset Progress</Button>
                           </div>
                         </div>
@@ -293,12 +313,7 @@ export default function HelpDeskDashboard() {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => {
-                          toast({
-                            title: "Error Details",
-                            description: `Viewing full log for ${log.user}`,
-                          });
-                        }}
+                        onClick={() => handleViewErrorDetails(log)}
                       >
                         <FileText className="h-4 w-4 mr-1" />
                         Details
@@ -339,6 +354,154 @@ export default function HelpDeskDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* User Details Dialog */}
+      <Dialog open={openUserDetails} onOpenChange={setOpenUserDetails}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+            <DialogDescription>
+              Complete learning details for {selectedUser?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-muted-foreground">Email</Label>
+                <p className="font-medium">{selectedUser?.email}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Company</Label>
+                <p className="font-medium">{selectedUser?.company}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Total Enrollments</Label>
+                <p className="text-2xl font-bold">{selectedUser?.enrollments}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Completed Courses</Label>
+                <p className="text-2xl font-bold">{selectedUser?.completed}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Last Active</Label>
+                <p className="font-medium">{selectedUser?.lastActive}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Completion Rate</Label>
+                <p className="font-medium">
+                  {selectedUser && Math.round((selectedUser.completed / selectedUser.enrollments) * 100)}%
+                </p>
+              </div>
+            </div>
+            <div className="space-y-2 pt-4 border-t">
+              <Label>Overall Progress</Label>
+              <Progress 
+                value={selectedUser && (selectedUser.completed / selectedUser.enrollments) * 100} 
+                className="h-3" 
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Progress Dialog */}
+      <Dialog open={openResetProgress} onOpenChange={setOpenResetProgress}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Reset Course Progress</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to reset all course progress for {selectedUser?.name}? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+              <p className="text-sm text-destructive font-medium">Warning</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                This will reset all course progress, quiz scores, and certificates for this user.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenResetProgress(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmResetProgress}>
+              Reset Progress
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Details Dialog */}
+      <Dialog open={openErrorDetails} onOpenChange={setOpenErrorDetails}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>SCORM Error Details</DialogTitle>
+            <DialogDescription>
+              Detailed error log for troubleshooting
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>User</Label>
+              <p className="font-medium">{selectedError?.user}</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Course</Label>
+              <p className="font-medium">{selectedError?.course}</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Error Message</Label>
+              <div className="rounded-lg bg-muted p-4">
+                <code className="text-sm font-mono text-destructive">
+                  {selectedError?.error}
+                </code>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Severity</Label>
+                <Badge variant={
+                  selectedError?.severity === 'high' ? 'destructive' :
+                  selectedError?.severity === 'medium' ? 'default' :
+                  'secondary'
+                }>
+                  {selectedError?.severity}
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <Label>Time</Label>
+                <p className="font-medium">{selectedError?.time}</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Stack Trace</Label>
+              <div className="rounded-lg bg-muted p-4 max-h-40 overflow-y-auto">
+                <code className="text-xs font-mono whitespace-pre">
+{`at LMSInitialize (scorm-api.js:145)
+at CoursePlayer.initialize (player.js:89)
+at Object.load (main.js:234)
+at XMLHttpRequest.onload (ajax.js:67)`}
+                </code>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenErrorDetails(false)}>
+              Close
+            </Button>
+            <Button onClick={() => {
+              toast({
+                title: "Error Reported",
+                description: "Technical team has been notified",
+              });
+              setOpenErrorDetails(false);
+            }}>
+              Report to Tech Team
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
