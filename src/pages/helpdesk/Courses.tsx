@@ -3,11 +3,24 @@ import { CourseCard } from '@/components/CourseCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Search, BookOpen, Users, Clock, AlertCircle } from 'lucide-react';
 import { courses } from '@/data/mockData';
 import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function HelpDeskCourses() {
+  const { toast } = useToast();
+  const [openCourseDetails, setOpenCourseDetails] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+
+  const handleViewDetails = (course: any) => {
+    setSelectedCourse(course);
+    setOpenCourseDetails(true);
+  };
+
   return (
     <DashboardLayout userRole="helpdesk" userName="Support Agent">
       <div className="space-y-6">
@@ -86,13 +99,99 @@ export default function HelpDeskCourses() {
                 course={course}
                 actionButton={{
                   label: 'View Details',
-                  onClick: () => console.log('View details', course.id),
+                  onClick: () => handleViewDetails(course),
                 }}
               />
             </div>
           ))}
         </div>
       </div>
+
+      {/* Course Details Dialog */}
+      <Dialog open={openCourseDetails} onOpenChange={setOpenCourseDetails}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Course Technical Details</DialogTitle>
+            <DialogDescription>
+              SCORM and technical information for {selectedCourse?.title}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4 max-h-[500px] overflow-y-auto">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Course Title</Label>
+                <p className="font-medium">{selectedCourse?.title}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Course ID</Label>
+                <p className="font-mono text-sm">{selectedCourse?.id}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <p className="font-medium">{selectedCourse?.category}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Duration</Label>
+                <p className="font-medium">{selectedCourse?.duration}</p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 space-y-3">
+              <h4 className="font-semibold">SCORM Information</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between p-2 bg-muted rounded">
+                  <span className="text-sm text-muted-foreground">SCORM Version</span>
+                  <span className="text-sm font-medium">SCORM 2004 3rd Edition</span>
+                </div>
+                <div className="flex justify-between p-2 bg-muted rounded">
+                  <span className="text-sm text-muted-foreground">Package Type</span>
+                  <span className="text-sm font-medium">CAM (Content Aggregation Model)</span>
+                </div>
+                <div className="flex justify-between p-2 bg-muted rounded">
+                  <span className="text-sm text-muted-foreground">Manifest File</span>
+                  <span className="text-sm font-mono">imsmanifest.xml</span>
+                </div>
+                <div className="flex justify-between p-2 bg-muted rounded">
+                  <span className="text-sm text-muted-foreground">Launch File</span>
+                  <span className="text-sm font-mono">index.html</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 space-y-3">
+              <h4 className="font-semibold">Usage Statistics</h4>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <p className="text-2xl font-bold">342</p>
+                  <p className="text-xs text-muted-foreground">Active Users</p>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <p className="text-2xl font-bold">87%</p>
+                  <p className="text-xs text-muted-foreground">Avg Completion</p>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <p className="text-2xl font-bold">8</p>
+                  <p className="text-xs text-muted-foreground">Active Issues</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 space-y-2">
+              <h4 className="font-semibold">Recent Issues</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 border rounded">
+                  <span className="text-sm">LMSInitialize() timeout</span>
+                  <Badge variant="destructive">High</Badge>
+                </div>
+                <div className="flex items-center justify-between p-2 border rounded">
+                  <span className="text-sm">Score not recording</span>
+                  <Badge variant="default">Medium</Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
