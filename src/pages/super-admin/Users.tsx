@@ -5,9 +5,20 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Plus, Search, Shield, FileText, Building2, User, Headphones } from 'lucide-react';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SuperAdminUsers() {
+  const { toast } = useToast();
+  const [openAddUser, setOpenAddUser] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userRole, setUserRole] = useState('employee');
+  const [userCompany, setUserCompany] = useState('');
+
   const users = [
     { id: 1, name: 'John Administrator', email: 'john.admin@platform.com', role: 'super_admin', company: 'Platform', status: 'active', lastActive: '2 min ago' },
     { id: 2, name: 'Sarah Content', email: 'sarah.c@platform.com', role: 'content_admin', company: 'Platform', status: 'active', lastActive: '1 hour ago' },
@@ -15,6 +26,26 @@ export default function SuperAdminUsers() {
     { id: 4, name: 'Emily Davis', email: 'emily.d@ocean.com', role: 'employee', company: 'Ocean Logistics', status: 'active', lastActive: '5 hours ago' },
     { id: 5, name: 'Tom Support', email: 'tom.s@platform.com', role: 'helpdesk', company: 'Platform', status: 'active', lastActive: '10 min ago' },
   ];
+
+  const handleAddUser = () => {
+    if (!userName || !userEmail || !userCompany) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "User Added",
+      description: `${userName} has been added as ${userRole.replace('_', ' ')}`,
+    });
+    setOpenAddUser(false);
+    setUserName('');
+    setUserEmail('');
+    setUserRole('employee');
+    setUserCompany('');
+  };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -46,7 +77,7 @@ export default function SuperAdminUsers() {
             <h1 className="text-3xl font-bold">User Management</h1>
             <p className="text-muted-foreground">Manage platform users and roles</p>
           </div>
-          <Button>
+          <Button onClick={() => setOpenAddUser(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add User
           </Button>
@@ -150,6 +181,68 @@ export default function SuperAdminUsers() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={openAddUser} onOpenChange={setOpenAddUser}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New User</DialogTitle>
+            <DialogDescription>
+              Create a new user account and assign their role.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="user-name">Full Name *</Label>
+              <Input
+                id="user-name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="John Doe"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="user-email">Email Address *</Label>
+              <Input
+                id="user-email"
+                type="email"
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
+                placeholder="john@company.com"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="user-company">Company *</Label>
+              <Input
+                id="user-company"
+                value={userCompany}
+                onChange={(e) => setUserCompany(e.target.value)}
+                placeholder="e.g. Ocean Logistics"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="user-role">Role *</Label>
+              <Select value={userRole} onValueChange={setUserRole}>
+                <SelectTrigger id="user-role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="super_admin">Super Admin</SelectItem>
+                  <SelectItem value="content_admin">Content Admin</SelectItem>
+                  <SelectItem value="client_admin">Client Admin</SelectItem>
+                  <SelectItem value="employee">Employee</SelectItem>
+                  <SelectItem value="helpdesk">HelpDesk</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenAddUser(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddUser}>Add User</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
