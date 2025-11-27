@@ -2,10 +2,21 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Download, FileText, Calendar, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ClientAdminReports() {
+  const { toast } = useToast();
+  const [openGenerateReport, setOpenGenerateReport] = useState(false);
+  const [reportType, setReportType] = useState('');
+  const [reportFormat, setReportFormat] = useState('pdf');
+  const [includeCharts, setIncludeCharts] = useState(true);
+  
   const completionData = [
     { month: 'Jan', rate: 68 },
     { month: 'Feb', rate: 72 },
@@ -29,6 +40,32 @@ export default function ClientAdminReports() {
     { id: 4, name: 'Department Analysis', type: 'Analytics', date: '2024-08-10', format: 'Excel' },
   ];
 
+  const handleGenerateReport = () => {
+    if (!reportType) {
+      toast({
+        title: "Error",
+        description: "Please select a report type",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "Report Generated",
+      description: `Your ${reportType} report is being generated and will be available for download shortly`,
+    });
+    setOpenGenerateReport(false);
+    setReportType('');
+    setReportFormat('pdf');
+    setIncludeCharts(true);
+  };
+
+  const handleDownload = (reportName: string) => {
+    toast({
+      title: "Download Started",
+      description: `Downloading ${reportName}...`,
+    });
+  };
+
   return (
     <DashboardLayout userRole="client_admin" userName="Client Admin">
       <div className="space-y-6">
@@ -48,7 +85,7 @@ export default function ClientAdminReports() {
                 <SelectItem value="90">Last 90 days</SelectItem>
               </SelectContent>
             </Select>
-            <Button>
+            <Button onClick={() => setOpenGenerateReport(true)}>
               <FileText className="h-4 w-4 mr-2" />
               Generate Report
             </Button>
@@ -163,7 +200,7 @@ export default function ClientAdminReports() {
                       </div>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleDownload(report.name)}>
                     <Download className="h-4 w-4 mr-1" />
                     Download
                   </Button>
@@ -173,6 +210,71 @@ export default function ClientAdminReports() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={openGenerateReport} onOpenChange={setOpenGenerateReport}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Generate Report</DialogTitle>
+            <DialogDescription>
+              Create a custom report with your selected parameters
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="report-type">Report Type *</Label>
+              <Select value={reportType} onValueChange={setReportType}>
+                <SelectTrigger id="report-type">
+                  <SelectValue placeholder="Select report type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="compliance">Compliance Report</SelectItem>
+                  <SelectItem value="progress">Employee Progress Report</SelectItem>
+                  <SelectItem value="department">Department Analysis</SelectItem>
+                  <SelectItem value="summary">Training Summary</SelectItem>
+                  <SelectItem value="certificates">Certificates Report</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="report-format">Format</Label>
+              <Select value={reportFormat} onValueChange={setReportFormat}>
+                <SelectTrigger id="report-format">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pdf">PDF Document</SelectItem>
+                  <SelectItem value="excel">Excel Spreadsheet</SelectItem>
+                  <SelectItem value="csv">CSV File</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center space-x-2 pt-2">
+              <Checkbox
+                id="include-charts"
+                checked={includeCharts}
+                onCheckedChange={(checked) => setIncludeCharts(checked as boolean)}
+              />
+              <label
+                htmlFor="include-charts"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Include charts and visualizations
+              </label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenGenerateReport(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleGenerateReport}>
+              <FileText className="h-4 w-4 mr-2" />
+              Generate
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
