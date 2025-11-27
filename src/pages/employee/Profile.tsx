@@ -5,9 +5,70 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function EmployeeProfile() {
+  const { toast } = useToast();
+  const [openPhotoDialog, setOpenPhotoDialog] = useState(false);
+  const [firstName, setFirstName] = useState('John');
+  const [lastName, setLastName] = useState('Doe');
+  const [email, setEmail] = useState('john.doe@company.com');
+  const [phone, setPhone] = useState('+1 (555) 123-4567');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSaveProfile = () => {
+    toast({
+      title: "Profile Updated",
+      description: "Your profile information has been saved successfully",
+    });
+  };
+
+  const handleUpdatePassword = () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Please fill in all password fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "New passwords don't match",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "Password Updated",
+      description: "Your password has been changed successfully",
+    });
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
+  const handlePhotoUpload = () => {
+    toast({
+      title: "Photo Updated",
+      description: "Your profile photo has been uploaded successfully",
+    });
+    setOpenPhotoDialog(false);
+  };
+
+  const handleToggle = (setting: string, checked: boolean) => {
+    toast({
+      title: "Setting Updated",
+      description: `${setting} has been ${checked ? 'enabled' : 'disabled'}`,
+    });
+  };
+
   return (
     <DashboardLayout userRole="employee" userName="John Doe">
       <div className="space-y-6">
@@ -36,7 +97,9 @@ export default function EmployeeProfile() {
                     <AvatarFallback className="text-2xl">JD</AvatarFallback>
                   </Avatar>
                   <div>
-                    <Button variant="outline" size="sm">Change Photo</Button>
+                    <Button variant="outline" size="sm" onClick={() => setOpenPhotoDialog(true)}>
+                      Change Photo
+                    </Button>
                     <p className="text-xs text-muted-foreground mt-2">JPG, PNG or GIF • Max 2MB</p>
                   </div>
                 </div>
@@ -44,23 +107,23 @@ export default function EmployeeProfile() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="first-name">First Name</Label>
-                    <Input id="first-name" defaultValue="John" />
+                    <Input id="first-name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="last-name">Last Name</Label>
-                    <Input id="last-name" defaultValue="Doe" />
+                    <Input id="last-name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue="john.doe@company.com" />
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" defaultValue="+1 (555) 123-4567" />
+                    <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="department">Department</Label>
@@ -68,7 +131,7 @@ export default function EmployeeProfile() {
                   </div>
                 </div>
 
-                <Button>Save Changes</Button>
+                <Button onClick={handleSaveProfile}>Save Changes</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -82,17 +145,32 @@ export default function EmployeeProfile() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="current-password">Current Password</Label>
-                  <Input id="current-password" type="password" />
+                  <Input 
+                    id="current-password" 
+                    type="password" 
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="new-password">New Password</Label>
-                  <Input id="new-password" type="password" />
+                  <Input 
+                    id="new-password" 
+                    type="password" 
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password">Confirm New Password</Label>
-                  <Input id="confirm-password" type="password" />
+                  <Input 
+                    id="confirm-password" 
+                    type="password" 
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
                 </div>
-                <Button>Update Password</Button>
+                <Button onClick={handleUpdatePassword}>Update Password</Button>
               </CardContent>
             </Card>
 
@@ -107,7 +185,7 @@ export default function EmployeeProfile() {
                     <p className="font-medium">Enable 2FA</p>
                     <p className="text-sm text-muted-foreground">Protect your account with 2FA</p>
                   </div>
-                  <Switch />
+                  <Switch onCheckedChange={(checked) => handleToggle('Two-Factor Authentication', checked)} />
                 </div>
               </CardContent>
             </Card>
@@ -125,28 +203,28 @@ export default function EmployeeProfile() {
                     <p className="font-medium">Email Notifications</p>
                     <p className="text-sm text-muted-foreground">Receive email updates about your courses</p>
                   </div>
-                  <Switch defaultChecked />
+                  <Switch defaultChecked onCheckedChange={(checked) => handleToggle('Email Notifications', checked)} />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Course Reminders</p>
                     <p className="text-sm text-muted-foreground">Get reminders about upcoming deadlines</p>
                   </div>
-                  <Switch defaultChecked />
+                  <Switch defaultChecked onCheckedChange={(checked) => handleToggle('Course Reminders', checked)} />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Achievement Alerts</p>
                     <p className="text-sm text-muted-foreground">Notifications when you complete courses</p>
                   </div>
-                  <Switch defaultChecked />
+                  <Switch defaultChecked onCheckedChange={(checked) => handleToggle('Achievement Alerts', checked)} />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Weekly Progress Report</p>
                     <p className="text-sm text-muted-foreground">Summary of your weekly learning activity</p>
                   </div>
-                  <Switch />
+                  <Switch onCheckedChange={(checked) => handleToggle('Weekly Progress Report', checked)} />
                 </div>
               </CardContent>
             </Card>
@@ -170,6 +248,35 @@ export default function EmployeeProfile() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog open={openPhotoDialog} onOpenChange={setOpenPhotoDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Change Profile Photo</DialogTitle>
+            <DialogDescription>
+              Upload a new profile photo. Max file size: 2MB
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex flex-col items-center gap-4">
+              <Avatar className="h-32 w-32">
+                <AvatarImage src="" />
+                <AvatarFallback className="text-4xl">JD</AvatarFallback>
+              </Avatar>
+              <Input
+                type="file"
+                accept="image/png, image/jpeg, image/gif"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenPhotoDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handlePhotoUpload}>Upload Photo</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

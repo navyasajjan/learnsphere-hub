@@ -2,9 +2,18 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Award, Download, Share2, Calendar } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Award, Download, Share2, Calendar, Copy, Mail, Linkedin, Twitter } from 'lucide-react';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function EmployeeCertificates() {
+  const { toast } = useToast();
+  const [openShareDialog, setOpenShareDialog] = useState(false);
+  const [selectedCertificate, setSelectedCertificate] = useState<any>(null);
+  
   const certificates = [
     { id: 1, course: 'Maritime Safety Fundamentals', issueDate: '2024-08-20', score: 92, validUntil: '2025-08-20', sector: 'Shipping' },
     { id: 2, course: 'Professional Housekeeping Standards', issueDate: '2024-08-15', score: 88, validUntil: '2025-08-15', sector: 'Hospitality' },
@@ -12,6 +21,34 @@ export default function EmployeeCertificates() {
     { id: 4, course: 'Food Safety & Hygiene', issueDate: '2024-07-25', score: 89, validUntil: '2025-07-25', sector: 'Catering' },
     { id: 5, course: 'Leadership Essentials', issueDate: '2024-07-15', score: 91, validUntil: '2026-07-15', sector: 'Soft Skills' },
   ];
+
+  const handleDownload = (cert: any) => {
+    toast({
+      title: "Downloading Certificate",
+      description: `Downloading ${cert.course} certificate as PDF...`,
+    });
+  };
+
+  const handleShare = (cert: any) => {
+    setSelectedCertificate(cert);
+    setOpenShareDialog(true);
+  };
+
+  const shareVia = (platform: string) => {
+    toast({
+      title: "Sharing Certificate",
+      description: `Sharing via ${platform}...`,
+    });
+    setOpenShareDialog(false);
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(`https://certificates.lms.com/${selectedCertificate?.id}`);
+    toast({
+      title: "Link Copied",
+      description: "Certificate link copied to clipboard",
+    });
+  };
 
   return (
     <DashboardLayout userRole="employee" userName="John Doe">
@@ -91,11 +128,11 @@ export default function EmployeeCertificates() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button size="sm" className="flex-1">
+                  <Button size="sm" className="flex-1" onClick={() => handleDownload(cert)}>
                     <Download className="h-4 w-4 mr-1" />
                     Download PDF
                   </Button>
-                  <Button size="sm" variant="outline" className="flex-1">
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => handleShare(cert)}>
                     <Share2 className="h-4 w-4 mr-1" />
                     Share
                   </Button>
@@ -105,6 +142,49 @@ export default function EmployeeCertificates() {
           ))}
         </div>
       </div>
+
+      <Dialog open={openShareDialog} onOpenChange={setOpenShareDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Share Certificate</DialogTitle>
+            <DialogDescription>
+              Share your {selectedCertificate?.course} certificate
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Certificate Link</Label>
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={`https://certificates.lms.com/${selectedCertificate?.id}`}
+                />
+                <Button size="icon" variant="outline" onClick={copyLink}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Share via</Label>
+              <div className="grid grid-cols-3 gap-2">
+                <Button variant="outline" onClick={() => shareVia('Email')}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </Button>
+                <Button variant="outline" onClick={() => shareVia('LinkedIn')}>
+                  <Linkedin className="h-4 w-4 mr-2" />
+                  LinkedIn
+                </Button>
+                <Button variant="outline" onClick={() => shareVia('Twitter')}>
+                  <Twitter className="h-4 w-4 mr-2" />
+                  Twitter
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
