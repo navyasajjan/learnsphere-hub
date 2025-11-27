@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Plus, Search, Shield, FileText, Building2, User, Headphones } from 'lucide-react';
 import { useState } from 'react';
@@ -171,7 +171,82 @@ export default function SuperAdminUsers() {
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{user.lastActive}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">Edit</Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="sm">Edit</Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[500px]">
+                            <DialogHeader>
+                              <DialogTitle>Edit User</DialogTitle>
+                              <DialogDescription>
+                                Update user information and role
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                              <div className="grid gap-2">
+                                <Label htmlFor="edit-name">Full Name</Label>
+                                <Input
+                                  id="edit-name"
+                                  defaultValue={user.name}
+                                />
+                              </div>
+                              <div className="grid gap-2">
+                                <Label htmlFor="edit-email">Email</Label>
+                                <Input
+                                  id="edit-email"
+                                  type="email"
+                                  defaultValue={user.email}
+                                />
+                              </div>
+                              <div className="grid gap-2">
+                                <Label htmlFor="edit-role">Role</Label>
+                                <Select defaultValue={user.role}>
+                                  <SelectTrigger id="edit-role">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="super_admin">Super Admin</SelectItem>
+                                    <SelectItem value="content_admin">Content Admin</SelectItem>
+                                    <SelectItem value="client_admin">Client Admin</SelectItem>
+                                    <SelectItem value="employee">Employee</SelectItem>
+                                    <SelectItem value="helpdesk">HelpDesk</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="grid gap-2">
+                                <Label htmlFor="edit-status">Status</Label>
+                                <Select defaultValue={user.status}>
+                                  <SelectTrigger id="edit-status">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                    <SelectItem value="suspended">Suspended</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              <Button 
+                                variant="outline"
+                                onClick={() => toast({ title: "Changes Discarded" })}
+                              >
+                                Cancel
+                              </Button>
+                              <Button 
+                                onClick={() => {
+                                  toast({
+                                    title: "User Updated",
+                                    description: `${user.name} has been updated successfully`,
+                                  });
+                                }}
+                              >
+                                Save Changes
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       </TableCell>
                     </TableRow>
                   );

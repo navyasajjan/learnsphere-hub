@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Building2, Plus, Search, Users, BookOpen } from 'lucide-react';
@@ -144,7 +144,70 @@ export default function SuperAdminClients() {
                     </TableCell>
                     <TableCell className="text-sm">{client.renewal}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="sm">Manage</Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm">Manage</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px]">
+                          <DialogHeader>
+                            <DialogTitle>{client.name}</DialogTitle>
+                            <DialogDescription>
+                              Client account management and overview
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm font-medium">Plan</p>
+                                <Badge variant="outline" className="mt-1">{client.plan}</Badge>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Status</p>
+                                <Badge variant={client.status === 'active' ? 'default' : 'secondary'} className="mt-1">
+                                  {client.status}
+                                </Badge>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Employees</p>
+                                <p className="text-sm text-muted-foreground mt-1">{client.employees} users</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Active Courses</p>
+                                <p className="text-sm text-muted-foreground mt-1">{client.courses} courses</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">Renewal Date</p>
+                                <p className="text-sm text-muted-foreground mt-1">{client.renewal}</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                              <Button 
+                                className="flex-1"
+                                onClick={() => {
+                                  toast({
+                                    title: "Editing Client",
+                                    description: `Opening editor for ${client.name}`,
+                                  });
+                                }}
+                              >
+                                Edit Details
+                              </Button>
+                              <Button 
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => {
+                                  toast({
+                                    title: "Viewing Analytics",
+                                    description: `Loading analytics for ${client.name}`,
+                                  });
+                                }}
+                              >
+                                View Analytics
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))}
