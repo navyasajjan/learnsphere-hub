@@ -5,10 +5,42 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Upload, Play, CheckCircle, AlertCircle, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ContentAdminUpload() {
+  const { toast } = useToast();
+  const [openPreview, setOpenPreview] = useState(false);
+  const [validationComplete, setValidationComplete] = useState(false);
+
+  const handleUpload = () => {
+    toast({
+      title: "Uploading Course",
+      description: "Validating SCORM package...",
+    });
+    setTimeout(() => {
+      setValidationComplete(true);
+      toast({
+        title: "Validation Complete",
+        description: "Course package validated successfully",
+      });
+    }, 2000);
+  };
+
+  const handleTestPreview = () => {
+    setOpenPreview(true);
+  };
+
+  const handleSaveDraft = () => {
+    toast({
+      title: "Draft Saved",
+      description: "Course has been saved as draft",
+    });
+  };
+
   return (
     <DashboardLayout userRole="content_admin" userName="Content Admin">
       <div className="space-y-6">
@@ -159,31 +191,39 @@ export default function ContentAdminUpload() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-success mt-0.5" />
+                  <CheckCircle className={`h-5 w-5 ${validationComplete ? 'text-success' : 'text-muted-foreground'} mt-0.5`} />
                   <div>
                     <p className="text-sm font-medium">Package Structure</p>
-                    <p className="text-xs text-muted-foreground">Valid ZIP format</p>
+                    <p className="text-xs text-muted-foreground">
+                      {validationComplete ? 'Valid ZIP format' : 'Waiting for upload'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-success mt-0.5" />
+                  <CheckCircle className={`h-5 w-5 ${validationComplete ? 'text-success' : 'text-muted-foreground'} mt-0.5`} />
                   <div>
                     <p className="text-sm font-medium">Manifest File</p>
-                    <p className="text-xs text-muted-foreground">imsmanifest.xml found</p>
+                    <p className="text-xs text-muted-foreground">
+                      {validationComplete ? 'imsmanifest.xml found' : 'Not checked'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
+                  <AlertCircle className={`h-5 w-5 ${validationComplete ? 'text-warning' : 'text-muted-foreground'} mt-0.5`} />
                   <div>
                     <p className="text-sm font-medium">Metadata</p>
-                    <p className="text-xs text-muted-foreground">Some fields missing</p>
+                    <p className="text-xs text-muted-foreground">
+                      {validationComplete ? 'Some fields missing' : 'Not checked'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-success mt-0.5" />
+                  <CheckCircle className={`h-5 w-5 ${validationComplete ? 'text-success' : 'text-muted-foreground'} mt-0.5`} />
                   <div>
                     <p className="text-sm font-medium">File References</p>
-                    <p className="text-xs text-muted-foreground">All files present</p>
+                    <p className="text-xs text-muted-foreground">
+                      {validationComplete ? 'All files present' : 'Not checked'}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -194,15 +234,15 @@ export default function ContentAdminUpload() {
                 <CardTitle className="text-sm">Upload Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button className="w-full">
+                <Button className="w-full" onClick={handleUpload}>
                   <Upload className="h-4 w-4 mr-2" />
                   Upload & Validate
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={handleTestPreview}>
                   <Play className="h-4 w-4 mr-2" />
                   Test Preview
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={handleSaveDraft}>
                   Save as Draft
                 </Button>
               </CardContent>
@@ -228,6 +268,37 @@ export default function ContentAdminUpload() {
           </div>
         </div>
       </div>
+
+      {/* SCORM Preview Dialog */}
+      <Dialog open={openPreview} onOpenChange={setOpenPreview}>
+        <DialogContent className="sm:max-w-[800px] h-[600px]">
+          <DialogHeader>
+            <DialogTitle>SCORM Player Preview</DialogTitle>
+            <DialogDescription>
+              Test your course before publishing
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 bg-muted rounded-lg flex items-center justify-center">
+            <div className="text-center space-y-4">
+              <Play className="h-16 w-16 mx-auto text-muted-foreground" />
+              <div>
+                <p className="font-medium">SCORM Player</p>
+                <p className="text-sm text-muted-foreground">
+                  Upload a package to preview the course content
+                </p>
+              </div>
+              <Button variant="outline" onClick={() => {
+                toast({
+                  title: "Course Loaded",
+                  description: "SCORM player initialized successfully",
+                });
+              }}>
+                Load Course
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
