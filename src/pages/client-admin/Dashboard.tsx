@@ -37,21 +37,14 @@ export default function ClientAdminDashboard() {
             <p className="text-muted-foreground">Manage employees and training programs</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => {
-              toast({
-                title: "Bulk Upload",
-                description: "Bulk upload dialog would open here",
-              });
-            }}>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/client-admin/employees')}
+            >
               <Upload className="h-4 w-4 mr-2" />
               Bulk Upload
             </Button>
-            <Button onClick={() => {
-              toast({
-                title: "Add Employee",
-                description: "Employee creation form would open here",
-              });
-            }}>
+            <Button onClick={() => navigate('/client-admin/employees')}>
               <UserPlus className="h-4 w-4 mr-2" />
               Add Employee
             </Button>
@@ -222,12 +215,7 @@ export default function ClientAdminDashboard() {
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => {
-                  toast({
-                    title: "Generating Report",
-                    description: "Your compliance report is being prepared...",
-                  });
-                }}
+                onClick={() => navigate('/client-admin/reports')}
               >
                 Generate Report
               </Button>
