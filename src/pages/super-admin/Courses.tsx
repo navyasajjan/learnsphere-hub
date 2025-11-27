@@ -19,6 +19,15 @@ export default function SuperAdminCourses() {
   const [courseDescription, setCourseDescription] = useState('');
   const [courseSector, setCourseSector] = useState('');
   const [courseStatus, setCourseStatus] = useState('draft');
+  
+  const [openManageCourse, setOpenManageCourse] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [manageCourseTitle, setManageCourseTitle] = useState('');
+  const [manageCourseDescription, setManageCourseDescription] = useState('');
+  const [manageCourseSector, setManageCourseSector] = useState('');
+  const [manageCourseStatus, setManageCourseStatus] = useState('');
+  const [manageCourseVersion, setManageCourseVersion] = useState('');
+  const [manageCourseScormType, setManageCourseScormType] = useState('');
 
   const handleAddCourse = () => {
     if (!courseTitle || !courseDescription || !courseSector) {
@@ -38,6 +47,48 @@ export default function SuperAdminCourses() {
     setCourseDescription('');
     setCourseSector('');
     setCourseStatus('draft');
+  };
+
+  const handleOpenManageCourse = (course: any) => {
+    setSelectedCourse(course);
+    setManageCourseTitle(course.title);
+    setManageCourseDescription(course.description);
+    setManageCourseSector(course.sector);
+    setManageCourseStatus(course.isPublished ? 'published' : 'draft');
+    setManageCourseVersion(course.version);
+    setManageCourseScormType(course.scormType);
+    setOpenManageCourse(true);
+  };
+
+  const handleSaveCourseChanges = () => {
+    if (!manageCourseTitle || !manageCourseDescription || !manageCourseSector) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "Course Updated",
+      description: `${manageCourseTitle} has been updated successfully`,
+    });
+    setOpenManageCourse(false);
+  };
+
+  const handleArchiveCourse = () => {
+    toast({
+      title: "Course Archived",
+      description: `${selectedCourse?.title} has been archived`,
+    });
+    setOpenManageCourse(false);
+  };
+
+  const handleDuplicateCourse = () => {
+    toast({
+      title: "Course Duplicated",
+      description: `A copy of ${selectedCourse?.title} has been created`,
+    });
   };
 
   return (
@@ -111,12 +162,7 @@ export default function SuperAdminCourses() {
               course={course}
               actionButton={{
                 label: 'Manage Course',
-                onClick: () => {
-                  toast({
-                    title: "Manage Course",
-                    description: `Managing ${course.title}`,
-                  });
-                },
+                onClick: () => handleOpenManageCourse(course),
               }}
             />
           ))}
@@ -186,6 +232,134 @@ export default function SuperAdminCourses() {
               Cancel
             </Button>
             <Button onClick={handleAddCourse}>Create Course</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openManageCourse} onOpenChange={setOpenManageCourse}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Manage Course</DialogTitle>
+            <DialogDescription>
+              Edit course details, manage assignments, and control publication status.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-6 py-4">
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="manage-course-title">Course Title *</Label>
+                <Input
+                  id="manage-course-title"
+                  value={manageCourseTitle}
+                  onChange={(e) => setManageCourseTitle(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="manage-course-description">Description *</Label>
+                <Textarea
+                  id="manage-course-description"
+                  value={manageCourseDescription}
+                  onChange={(e) => setManageCourseDescription(e.target.value)}
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="manage-course-sector">Sector *</Label>
+                <Select value={manageCourseSector} onValueChange={setManageCourseSector}>
+                  <SelectTrigger id="manage-course-sector">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="shipping">Shipping</SelectItem>
+                    <SelectItem value="hospitality">Hospitality</SelectItem>
+                    <SelectItem value="soft-skills">Soft Skills</SelectItem>
+                    <SelectItem value="safety">Safety</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="manage-course-status">Status</Label>
+                <Select value={manageCourseStatus} onValueChange={setManageCourseStatus}>
+                  <SelectTrigger id="manage-course-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="review">Under Review</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="manage-course-version">Version</Label>
+                <Input
+                  id="manage-course-version"
+                  value={manageCourseVersion}
+                  onChange={(e) => setManageCourseVersion(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="manage-course-scorm">SCORM Type</Label>
+                <Select value={manageCourseScormType} onValueChange={setManageCourseScormType}>
+                  <SelectTrigger id="manage-course-scorm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SCORM 1.2">SCORM 1.2</SelectItem>
+                    <SelectItem value="SCORM 2004">SCORM 2004</SelectItem>
+                    <SelectItem value="xAPI">xAPI</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-medium mb-3">Course Statistics</h4>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Total Enrollments</p>
+                  <p className="text-2xl font-bold">{selectedCourse?.enrollmentCount || 0}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Completion Rate</p>
+                  <p className="text-2xl font-bold">78%</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Avg. Score</p>
+                  <p className="text-2xl font-bold">85%</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-medium mb-3">Quick Actions</h4>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" onClick={handleDuplicateCourse}>
+                  Duplicate Course
+                </Button>
+                <Button variant="outline" size="sm">
+                  View Analytics
+                </Button>
+                <Button variant="outline" size="sm">
+                  Manage Assignments
+                </Button>
+                <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" onClick={handleArchiveCourse}>
+                  Archive Course
+                </Button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenManageCourse(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveCourseChanges}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
