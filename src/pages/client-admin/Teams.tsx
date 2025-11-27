@@ -2,10 +2,22 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Users, BookOpen, TrendingUp } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ClientAdminTeams() {
+  const { toast } = useToast();
+  const [openCreateTeam, setOpenCreateTeam] = useState(false);
+  const [teamName, setTeamName] = useState('');
+  const [teamManager, setTeamManager] = useState('');
+  const [teamDescription, setTeamDescription] = useState('');
+
   const teams = [
     { id: 1, name: 'Operations Team', members: 45, manager: 'John Smith', assignedCourses: 12, avgProgress: 78, status: 'active' },
     { id: 2, name: 'Sales Team', members: 32, manager: 'Sarah Johnson', assignedCourses: 8, avgProgress: 92, status: 'active' },
@@ -13,6 +25,25 @@ export default function ClientAdminTeams() {
     { id: 4, name: 'Finance Team', members: 18, manager: 'Emily Davis', assignedCourses: 10, avgProgress: 88, status: 'active' },
     { id: 5, name: 'IT Department', members: 25, manager: 'James Wilson', assignedCourses: 15, avgProgress: 94, status: 'active' },
   ];
+
+  const handleCreateTeam = () => {
+    if (!teamName || !teamManager) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "Team Created",
+      description: `${teamName} has been created successfully`,
+    });
+    setOpenCreateTeam(false);
+    setTeamName('');
+    setTeamManager('');
+    setTeamDescription('');
+  };
 
   return (
     <DashboardLayout userRole="client_admin" userName="Client Admin">
@@ -22,7 +53,7 @@ export default function ClientAdminTeams() {
             <h1 className="text-3xl font-bold">Team Management</h1>
             <p className="text-muted-foreground">Organize employees into teams and departments</p>
           </div>
-          <Button>
+          <Button onClick={() => setOpenCreateTeam(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Create Team
           </Button>
@@ -115,6 +146,53 @@ export default function ClientAdminTeams() {
           ))}
         </div>
       </div>
+
+      <Dialog open={openCreateTeam} onOpenChange={setOpenCreateTeam}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Team</DialogTitle>
+            <DialogDescription>
+              Create a new team or department to organize your employees.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="team-name">Team Name *</Label>
+              <Input
+                id="team-name"
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                placeholder="e.g. Marketing Team"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="team-manager">Team Manager *</Label>
+              <Input
+                id="team-manager"
+                value={teamManager}
+                onChange={(e) => setTeamManager(e.target.value)}
+                placeholder="Manager's name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="team-description">Description</Label>
+              <Textarea
+                id="team-description"
+                value={teamDescription}
+                onChange={(e) => setTeamDescription(e.target.value)}
+                placeholder="Team description and responsibilities..."
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenCreateTeam(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateTeam}>Create Team</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
